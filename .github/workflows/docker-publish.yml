@@ -42,3 +42,17 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
+  deploy-to-azure:
+    runs-on: ubuntu-latest
+    needs: build-and-publish
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: <app_service_name>
+          images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
